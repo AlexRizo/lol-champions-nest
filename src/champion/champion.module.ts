@@ -15,5 +15,6 @@ import { ChampionService } from './champion.service';
       },
     ]),
   ],
+  exports: [MongooseModule],
 })
 export class ChampionModule {}

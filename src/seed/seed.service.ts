@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
-import {
-  Champion,
-  ChampResponse,
-} from './interfaces/champion-response.interface';
+import { ChampResponse } from './interfaces/champion-response.interface';
+import { Champion } from 'src/champion/entities/champion.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class SeedService {
   private readonly axios: AxiosInstance = axios;
 
+  constructor(
+    @InjectModel(Champion.name)
+    private readonly championModel: Model<Champion>,
+  ) {}
+
   async executeSeed() {
+    await this.championModel.deleteMany();
+
     const { data: response } = await this.axios.get<ChampResponse>(
       'https://ddragon.leagueoflegends.com/cdn/15.11.1/data/es_MX/champion.json',
     );
@@ -17,17 +24,15 @@ export class SeedService {
     const champions = response.data;
     const arrayChampions = Object.values(champions);
 
-    const newChampions: Champion[] = arrayChampions.map(champion => {
-      return {
-        id: champion.id,
-        name: champion.name,
-        title: champion.title,
-        key: champion.key,
-      };
-    });
+    const championsToInsert = arrayChampions.map(champ => ({
+      championId: champ.id,
+      name: champ.name,
+      title: champ.title,
+      key: champ.key,
+    }));
 
-    console.log(newChampions);
+    await this.championModel.insertMany(championsToInsert);
 
-    return 'This action adds a new seed';
+    return 'Se ha ejecutado el seed';
   }
 }

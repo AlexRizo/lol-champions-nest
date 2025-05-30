@@ -8,6 +8,7 @@
 2. Ejecutar ```pnpm install```
 3. Tener Nest CLI instalado ```pnpm add -g @nestjs/cli```
 4. Ejecutar la base de datos ```docker-compose up -d```
+5. Reconstruir la base de datos con la semilla ```GET - http://localhost:3000/api/seed```
 
 ## Stack
 * React Router 7 framework mode
