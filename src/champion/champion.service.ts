@@ -9,13 +9,20 @@ import { UpdateChampionDto } from './dto/update-champion.dto';
 import { isValidObjectId, Model } from 'mongoose';
 import { Champion } from './entities/champion.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ChampionService {
+  private defaultLimit: number;
+
   constructor(
     @InjectModel(Champion.name)
     private readonly championModel: Model<Champion>,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.defaultLimit = configService.get('defaultLimit');
+  }
 
   async create(createChampionDto: CreateChampionDto) {
     try {
@@ -27,8 +34,17 @@ export class ChampionService {
     }
   }
 
-  async findAll() {
-    return await this.championModel.find();
+  async findAll(paginationDto: PaginationDto) {
+    const { limit = this.defaultLimit, offset = 0 } = paginationDto;
+
+    return await this.championModel
+      .find()
+      .limit(limit)
+      .skip(offset)
+      .sort({
+        championId: 1,
+      })
+      .select('-__v');
   }
 
   async findOne(term: string) {

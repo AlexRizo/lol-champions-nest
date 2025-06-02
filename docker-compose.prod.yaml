@@ -1,0 +1,28 @@
+services:
+  championsapp:
+    depends_on:
+      - db
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: champions-docker
+    container_name: championsapp
+    restart: always # reiniciar el contenedor si se detiene
+    ports:
+      - "${PORT}:${PORT}"
+    # working_dir: /var/www/champions
+    environment:
+      MONGODB_URL: ${MONGODB_URL}
+      PORT: ${PORT}
+      DEFAULT_LIMIT: ${DEFAULT_LIMIT}
+
+  db:
+    image: mongo
+    container_name: mongo-champions
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_DATABASE: 'lol-champions'
+    # volumes:
+    #   - ./mongo:/data/db

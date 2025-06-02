@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ChampionService } from './champion.service';
 import { CreateChampionDto } from './dto/create-champion.dto';
 import { UpdateChampionDto } from './dto/update-champion.dto';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('champion')
 export class ChampionController {
@@ -22,8 +24,8 @@ export class ChampionController {
   }
 
   @Get()
-  findAll() {
-    return this.championService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.championService.findAll(paginationDto);
   }
 
   @Get(':term')
